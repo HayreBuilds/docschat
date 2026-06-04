@@ -160,3 +160,19 @@ The index file (`.docschat/index.json`) is a plain JSON object:
 ```
 
 You can inspect, merge, or version-control the index file. Large sites may produce files of 50-200MB.
+
+## Index Format
+
+The index file (`.docschat/index.json`) is a plain JSON object:
+
+```json
+{
+  "site": "https://docs.example.com",
+  "chunks": [
+    { "url": "...", "title": "...", "text": "...", "embedding": [0.012, ...] }
+  ],
+  "createdAt": "2025-01-14T12:00:00Z"
+}
+```
+
+You can inspect, merge, or version-control the index file. Large sites may produce files of 50-200MB.
