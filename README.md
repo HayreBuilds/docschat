@@ -1,178 +1,101 @@
-# docschat
+# 📚 docschat
 
-> Drop-in AI search for any documentation site. One `<script>` tag. Semantic search with cited answers. Free forever.
+[![Build Status](https://img.shields.io/github/actions/workflow/status/HayreBuilds/docschat/ci.yml?branch=main)](https://github.com/HayreBuilds/docschat/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NVIDIA NIM](https://img.shields.io/badge/NVIDIA-NIM-76B900?logo=nvidia&logoColor=white)](https://build.nvidia.com)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/HayreBuilds/docschat/pulls)
 
-```html
-<!-- Add to your docs site -->
-<script
-  src="https://your-server.com/widget.js"
-  data-server="https://your-server.com"
-  data-api-key="nvapi-..."
-  data-title="My Docs Search">
-</script>
-```
+**Drop-in AI search for any documentation site. One script tag. Semantic answers. Instant citations.**
 
-A floating chat button appears on your docs site. Visitors ask questions in natural language and get AI answers with citations.
+> Stop making your users dig through pages of docs. **docschat** adds a ChatGPT-like experience to your static documentation site in under 60 seconds.
 
 ---
 
-## Quick Start
+## 🚀 Quick Setup
 
-**Step 1:** Index your documentation
+### 1. Index your documentation
+```bash
+npx docschat crawl https://docs.yourproject.com
+```
+
+### 2. Add the widget
+Add this script to your HTML `<head>` or before `</body>`:
+```html
+<script src="https://cdn.jsdelivr.net/gh/HayreBuilds/docschat/widget.js"></script>
+```
+
+---
+
+## ✨ Key Features
+
+- **🔍 Semantic Search**: Answers questions based on meaning, not just keywords.
+- **📍 Source Citations**: Every answer includes links back to the exact page it used.
+- **⚡ Drop-in Widget**: Works with Docusaurus, MkDocs, GitBook, or any static HTML.
+- **🧠 Powered by NVIDIA NIM**: Uses high-performance `Nemotron-Ultra` and `nv-embedcode` models.
+- **📂 Local Indexing**: Saves your index to `.docschat/index.json` for instant subsequent loads.
+
+---
+
+## 💻 Installation
 
 ```bash
 npm install -g docschat
-export NVIDIA_API_KEY="nvapi-..."
+```
 
-# Index a documentation website
-docschat index https://docs.myproject.com
+---
 
-# Or index a local docs directory
+## 🛠️ Usage
+
+### Crawl and Index
+```bash
+# Index a remote URL
+docschat crawl https://react.dev
+
+# Index a local directory of Markdown files
 docschat index ./docs
 ```
 
-**Step 2:** Start the search server
-
+### Start Local Search Server
 ```bash
+export NVIDIA_API_KEY="your_key"
 docschat serve
-# → http://localhost:4242
 ```
 
-**Step 3:** Add the widget to your docs site
+---
 
-```html
-<script
-  src="http://localhost:4242/widget.js"
-  data-server="http://localhost:4242"
-  data-api-key="nvapi-...">
-</script>
-```
+## 🏗️ How It Works: The RAG Pipeline
 
-**Get your free NVIDIA API key:** [build.nvidia.com](https://build.nvidia.com)
+1. **Crawl**: Scans your documentation site and extracts clean text from HTML/Markdown.
+2. **Embed**: Converts text chunks into high-dimensional vectors using `nvidia/nv-embedcode-7b-v1`.
+3. **Store**: Saves vectors locally in a lightweight JSON vector store.
+4. **Retrieve**: When a user asks a question, it finds the top-K most relevant chunks.
+5. **Answer**: `nvidia/nemotron-4-340b-instruct` generates a concise answer with citations.
 
-## Usage
+---
 
-```bash
-# Index a website (crawls up to 50 pages by default)
-docschat index https://docs.example.com
+## ⚙️ Configuration
 
-# Index more pages
-docschat index https://docs.example.com --max-pages 200
+| Option | Default | Description |
+|:---|:---|:---|
+| `--port <n>` | `3001` | Port for the search API server |
+| `--model <id>` | `nemotron-ultra` | The LLM to use for answering |
+| `--selector <css>`| `article` | CSS selector for the main content area |
+| `--depth <n>` | `3` | Maximum crawl depth for remote URLs |
 
-# Index a local directory (Markdown, HTML, RST, MDX)
-docschat index ./docs
+---
 
-# Custom index location
-docschat index ./docs --output ./my-index.json
+## 🤝 Contributing
 
-# Start the server
-docschat serve
-docschat serve --port 4242
+We love contributions! See our [Contributing Guide](CONTRIBUTING.md) to get started.
 
-# Ask a question from the command line
-docschat ask "How do I configure authentication?"
+---
 
-# Ask via the running server
-curl -X POST http://localhost:4242/api/search \
-  -H "Content-Type: application/json" \
-  -d '{"question": "How does routing work?", "apiKey": "nvapi-..."}'
-```
+## 📄 License
 
-## Architecture
+Distributed under the MIT License. See `LICENSE` for more information.
 
-```
-Documentation site / local directory
-        ↓
-  Crawl or walk pages
-  (respects same-domain links)
-        ↓
-  Strip HTML, chunk into 300-word segments
-  with 50-word overlap
-        ↓
-  Embed with nvidia/nv-embedcode-7b-v1
-  (free NVIDIA NIM endpoint)
-        ↓
-  Save to .docschat/index.json
-        ↓
-  User question → embed query →
-  cosine similarity search →
-  top-6 most relevant chunks
-        ↓
-  Chunks + question → Nemotron-Ultra
-        ↓
-  Answer with citations → widget
-```
+---
 
-## Widget Options
+## 💖 Star History
 
-```html
-<script
-  src="..."
-  data-server="https://your-server.com"
-  data-api-key="nvapi-..."
-  data-title="Search Docs"
-  data-placeholder="Ask a question...">
-</script>
-```
-
-| Attribute | Description |
-|-----------|-------------|
-| `data-server` | URL of your docschat server |
-| `data-api-key` | NVIDIA NIM API key |
-| `data-title` | Widget panel title |
-| `data-placeholder` | Input placeholder text |
-
-## Server API
-
-```
-POST /api/search          { question, apiKey } → { answer, sources }
-GET  /api/status          Index status and stats
-GET  /widget.js           Embeddable widget script
-```
-
-## Supported File Types
-
-When indexing local directories: `.md`, `.mdx`, `.txt`, `.rst`, `.html`
-
-When crawling websites: all HTML pages on the same domain
-
-## Powered By (free NVIDIA NIM)
-
-- **`nvidia/nv-embedcode-7b-v1`** — Semantic code and text embeddings
-- **`nvidia/nemotron-3-ultra-550b-a55b`** — 550B reasoning model for answers
-
-## License
-
-MIT
-
-## Index Format
-
-The index file (`.docschat/index.json`) is a plain JSON object:
-
-```json
-{
-  "site": "https://docs.example.com",
-  "chunks": [
-    { "url": "...", "title": "...", "text": "...", "embedding": [0.012, ...] }
-  ],
-  "createdAt": "2025-01-14T12:00:00Z"
-}
-```
-
-You can inspect, merge, or version-control the index file. Large sites may produce files of 50-200MB.
-
-## Index Format
-
-The index file (`.docschat/index.json`) is a plain JSON object:
-
-```json
-{
-  "site": "https://docs.example.com",
-  "chunks": [
-    { "url": "...", "title": "...", "text": "...", "embedding": [0.012, ...] }
-  ],
-  "createdAt": "2025-01-14T12:00:00Z"
-}
-```
-
-You can inspect, merge, or version-control the index file. Large sites may produce files of 50-200MB.
+[![Star History Chart](https://api.star-history.com/svg?repos=HayreBuilds/docschat&type=Date)](https://star-history.com/#HayreBuilds/docschat&Date)
