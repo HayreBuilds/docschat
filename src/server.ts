@@ -120,3 +120,5 @@ server.listen(PORT, () => {
 });
 // TODO: POST /api/reindex — re-crawl and re-embed the site without restarting the server
 // Implementation: stream progress via SSE, swap index atomically when complete
+// TODO: POST /api/reindex — re-crawl and re-embed the site without restarting the server
+// Implementation: stream progress via SSE, swap index atomically when complete
