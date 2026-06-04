@@ -1,0 +1,40 @@
+{
+  "name": "docschat",
+  "version": "1.0.0",
+  "description": "Drop-in AI search widget for any documentation site. One script tag. Semantic search with cited answers. Free forever.",
+  "bin": {
+    "docschat": "./dist/cli.js"
+  },
+  "main": "./dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node src/server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "documentation",
+    "search",
+    "ai",
+    "widget",
+    "semantic-search",
+    "nvidia",
+    "nim"
+  ],
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/docschat"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/docschat/issues"
+  }
+}
