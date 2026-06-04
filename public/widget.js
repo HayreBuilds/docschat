@@ -88,3 +88,5 @@
 })();
 // Deploy to any CDN:
 // <script src="https://cdn.jsdelivr.net/gh/yourusername/docschat/public/widget.js" ...></script>
+// Deploy to any CDN:
+// <script src="https://cdn.jsdelivr.net/gh/yourusername/docschat/public/widget.js" ...></script>
